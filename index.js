@@ -19,22 +19,25 @@ mongoose.connect(url, {
 
 app.get('/',async(req,res)=>{
     
- //cron.schedule("*/1 * * * *",async()=>{
-
-   // const schedule = await Scheduler.findOne({date:moment(Date.now()).format('L'), time:moment().format('LT').toString()})
+ cron.schedule("*/1 * * * *",async()=>{
 
     const schedule = await Scheduler.findOne({
-        $where : function(){
-        return (this.date ==moment(Date.now()).format('L').toString())
+        $and:[{"date":moment(Date.now()).format('L')},{"time":{$eq:moment(Date.now()).format('LT').toString()}}]
+    })
+   // date:moment(Date.now()).format('L'),
+   //time:moment().format('LT').toString()}
+
+    if(schedule){
+        console.log("It worked")
+        console.log(moment(Date.now()).format('LT').toString())
+       
+        const updateStatue = await Scheduler.findByIdAndUpdate(schedule._id, {status:"complete"},{new:true})
+        console.log(updateStatue)
+        res.send(updateStatue)
     }
-    }) 
-    console.log("It worked")
-    console.log(moment().format('LT').toString())
-    console.log(schedule)
-    res.send(schedule)
  
 
-// })
+ })
 })
 
 app.post('/date-time',async(req,res)=>{
