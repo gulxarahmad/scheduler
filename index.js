@@ -3,7 +3,8 @@ const cron = require('node-cron')
 const Axios = require('axios');
 const mongoose = require('mongoose');
 const Scheduler = require('./Model/Date-Time')
-const moment = require('moment')
+const moment = require('moment');
+const { $where } = require('./Model/Date-Time');
 
 const app = express();
 app.use(express.json());
@@ -16,13 +17,24 @@ mongoose.connect(url, {
 
 })
 
-app.get('/',(req,res)=>{
-    cron.schedule("* * * * * *",()=>{
+app.get('/',async(req,res)=>{
+    
+ //cron.schedule("*/1 * * * *",async()=>{
 
-        console.log(moment(Date.now()).format('L'))
+   // const schedule = await Scheduler.findOne({date:moment(Date.now()).format('L'), time:moment().format('LT').toString()})
+
+    const schedule = await Scheduler.findOne({
+        $where : function(){
+        return (this.date ==moment(Date.now()).format('L').toString())
+    }
+    }) 
+    console.log("It worked")
+    console.log(moment().format('LT').toString())
+    console.log(schedule)
+    res.send(schedule)
  
 
-})
+// })
 })
 
 app.post('/date-time',async(req,res)=>{
