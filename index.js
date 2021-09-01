@@ -22,7 +22,7 @@ app.get('/',async(req,res)=>{
  cron.schedule("*/1 * * * *",async()=>{
 
     const schedule = await Scheduler.findOne({
-        $and:[{"date":moment(Date.now()).format('L')},{"time":{$eq:moment(Date.now()).format('LT').toString()}}]
+        $and:[{"date":moment(Date.now()).format('L')},{"time":{$eq:moment(Date.now()).format('LT').toString()}},{"status":"pending"}]
     })
    // date:moment(Date.now()).format('L'),
    //time:moment().format('LT').toString()}
@@ -42,13 +42,14 @@ app.get('/',async(req,res)=>{
 
 app.post('/date-time',async(req,res)=>{
     try{
-        const{Date, Time, Status} = req.body
+        const{Date, Time, Status, payload} = req.body
        
 
        const newSchedule = Scheduler({
            date:Date,
            time:Time,
-           status:Status
+           status:Status,
+           payload:payload
        })
 
        console.log(newSchedule)

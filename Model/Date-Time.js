@@ -10,7 +10,8 @@ const Schedule = new mongoose.Schema({
     },
     status:{
         type:String
-    }
+    },
+    payload:[]
 
 })
 
