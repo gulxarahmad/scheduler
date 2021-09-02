@@ -27,13 +27,17 @@ app.get('/',async(req,res)=>{
    // date:moment(Date.now()).format('L'),
    //time:moment().format('LT').toString()}
 
+
     if(schedule){
         console.log("It worked")
         console.log(moment(Date.now()).format('LT').toString())
        
-        const updateStatue = await Scheduler.findByIdAndUpdate(schedule._id, {status:"complete"},{new:true})
-        console.log(updateStatue)
-        res.send(updateStatue)
+        const updateStatus = await Scheduler.findByIdAndUpdate(schedule._id, {status:"complete"},{new:true})
+        console.log(updateStatus)
+        console.log("This is payload");
+        console.log(updateStatus.payload[0])
+        Axios.post("http://localhost:8000/get-data",updateStatus.payload[0])
+        res.send(updateStatus)
     }
  
 
@@ -60,6 +64,11 @@ app.post('/date-time',async(req,res)=>{
     catch(err){
         res.send(err.message)
     }
+})
+
+app.post('/get-data',(req,res)=>{
+    console.log("This is data from scheduler API")
+    console.log(req.body)
 })
 
 app.listen(8000,()=>{
