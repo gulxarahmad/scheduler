@@ -1,4 +1,5 @@
 const {google} = require('googleapis')
+const getfilelist = require("google-drive-getfilelist");
 const path = require('path')
 const fs = require('fs')
 
@@ -48,14 +49,16 @@ async function uploadFile (){
 
 }
 
-async function downloadFile(){
+async function downloadFile(id, name){
     try {
-        const dowloadPath = path.join(__dirname,'public/DriveImages/photo2.png')
+        
+        const dowloadPath = path.join(__dirname,`public/DriveImages/${name}.xlsx`)
         const dest = fs.createWriteStream(dowloadPath)
 
-       const response = await drive.files.get({
-            fileId:'1tiHhFyfnWHXuY_YsxWU_3uG344ho6MkB',
-            alt:'media'
+       const response = await drive.files.export({
+            fileId:`${id}`,
+            //alt:'media'
+            mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }, {responseType: 'stream'} ,
         function(err, res){
             res.data
@@ -74,12 +77,29 @@ async function downloadFile(){
     }
 }
 
-async function allFiles (){
 
-    const response = await drive.files.list({
-    
-    })
-    console.log(response.data)
+async function listFromFolder(){
+    const topFolderId = "10GZ6z6tBqTb1VOBlfq1uMGgAAcDF3NJR" // Please set the top folder ID.
+    getfilelist.GetFileList(
+      {
+        auth: oauth2Client,
+        fields: "files(id), files(name), files(mimeType)",
+        id: topFolderId,
+      },
+      (err, res) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        const fileList = res.fileList.flatMap(({ files }) => files);
+        console.log(fileList);
+
+        for(let i=0; i< fileList.length;i++){
+            downloadFile(fileList[i].id,fileList[i].name)
+            
+        }
+      }
+    );
 }
 
-downloadFile()
+listFromFolder()
