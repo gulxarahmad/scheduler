@@ -6,7 +6,8 @@ const fs = require('fs')
 const clientID = '561208463336-kh1m65tepso3siiq849bga07c01ob47p.apps.googleusercontent.com'
 const clientSecret = '_FMIUZ0LN1hkO2eNGxPp_mNz'
 const redirectURI = 'https://developers.google.com/oauthplayground'
-const refreshToken = '1//04C3GWPM1-YQDCgYIARAAGAQSNgF-L9IremJhdz9VbvHsB-mHtByCGc2yoF2-kOwbfg4WP8WtwXPTfiiTUZ1CZ5BwctUNJpYVSQ'
+const refreshToken = '1//04VaxGyFzZabYCgYIARAAGAQSNgF-L9Ir0OusfaaSoCPyE922IO8ygN_4Ck-Fb5st5CEQWbJ8UJmsOouQzSmAWUBcU2UcAkbumg'
+
 
 const oauth2Client = new google.auth.OAuth2(
 
@@ -58,12 +59,13 @@ async function downloadFile(id, name){
        const response = await drive.files.export({
             fileId:`${id}`,
             //alt:'media'
-            mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            
         }, {responseType: 'stream'} ,
         function(err, res){
             res.data
             .on('end', () => {
-                console.log('Done');
+                console.log(name +' Downloaded');
             })
             .on('error', err => {
                 console.log('Error', err);
@@ -83,7 +85,7 @@ async function listFromFolder(){
     getfilelist.GetFileList(
       {
         auth: oauth2Client,
-        fields: "files(id), files(name), files(mimeType)",
+     
         id: topFolderId,
       },
       (err, res) => {
